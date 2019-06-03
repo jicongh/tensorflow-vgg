@@ -2,6 +2,8 @@ import skimage
 import skimage.io
 import skimage.transform
 import numpy as np
+import cv2
+import matplotlib.pyplot as plt
 
 
 # synset = [l.strip() for l in open('synset.txt').readlines()]
@@ -59,13 +61,36 @@ def load_image2(path, height=None, width=None):
         nx = img.shape[1]
     return skimage.transform.resize(img, (ny, nx))
 
+def save_feature(img_datas,img_name):
+    """
+    img_datas: [1,H,W,C]
+    img_name: such as conv1_1
+    """
+    img_datas = np.array(img_datas)
+    img_datas = np.squeeze(img_datas)
 
+    img_num = img_datas.shape[2]
+    squr = img_num ** 0.5
+    row = round(squr)
+    col = row + 1 if squr - row > 0 else row
+    for i in range(img_num):
+        img_data = img_datas[:,:,i]
+        # plt.subplot(row,col,i+1)
+        plt.imshow(img_data)
+        plt.savefig('feature_pic/'+img_name+'_%d.jpg'%i)
+        # axis('off')
+        # title('feature map: %d'%i)
+    # plt.savefig('feature_pic/'+img_name+'.jpg')
+    # plt.show()
+    all_add = sum([img_datas[:,:,i] for i in range(img_num)])
+    plt.imshow(all_add)
+    plt.savefig('feature_pic/'+img_name+'add.jpg')
 def test():
-    img = skimage.io.imread("./test_data/starry_night.jpg")
+    img = skimage.io.imread("./test_data/puzzle.jpeg")
     ny = 300
-    nx = img.shape[1] * ny / img.shape[0]
+    nx = int(img.shape[1] * ny / img.shape[0])
     img = skimage.transform.resize(img, (ny, nx))
-    skimage.io.imsave("./test_data/test/output.jpg", img)
+    skimage.io.imsave("./test_data/output.jpeg", img)
 
 
 if __name__ == "__main__":
